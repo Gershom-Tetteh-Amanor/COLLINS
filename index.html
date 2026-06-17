@@ -208,6 +208,7 @@
     font-size: 0.7rem;
     transition: all 0.3s;
     cursor: pointer;
+    position: relative;
   }
   
   .gallery-item:hover {
@@ -219,6 +220,77 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+  
+  /* Gallery video - hide controls */
+  .gallery-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .gallery-video::-webkit-media-controls {
+    display: none !important;
+  }
+  
+  .gallery-video::-webkit-media-controls-enclosure {
+    display: none !important;
+  }
+  
+  .gallery-video::-webkit-media-controls-panel {
+    display: none !important;
+  }
+  
+  .gallery-video::-webkit-media-controls-play-button {
+    display: none !important;
+  }
+  
+  .gallery-video::-webkit-media-controls-timeline {
+    display: none !important;
+  }
+  
+  .gallery-video::-webkit-media-controls-current-time-display {
+    display: none !important;
+  }
+  
+  .gallery-video::-webkit-media-controls-time-remaining-display {
+    display: none !important;
+  }
+  
+  .gallery-video::-webkit-media-controls-mute-button {
+    display: none !important;
+  }
+  
+  .gallery-video::-webkit-media-controls-volume-slider {
+    display: none !important;
+  }
+  
+  .gallery-video::-webkit-media-controls-fullscreen-button {
+    display: none !important;
+  }
+  
+  /* Video play overlay for gallery */
+  .gallery-play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .gallery-item:hover .gallery-play-overlay {
+    opacity: 1;
   }
   
   .gallery-item .placeholder-content {
@@ -382,22 +454,21 @@
         <div class="divider"></div>
         <p class="message">From the moment you came into my life, everything changed. Your smile lights up my darkest days, and your laugh is the most beautiful sound I've ever heard.</p>
         <p class="message">You are the woman I dream about, the one I want to wake up next to, and the one I thank God for every single day.</p>
+        
         <div class="video-container">
           <video controls>
-            <source src="your-video.mp4" type="video/mp4">
+            <source src="couple goes.mp4" type="video/mp4">
             Your browser does not support the video tag.
           </video>
         </div>
       </div>
 
-      <!-- PAGE 3 - GALLERY / PHOTOS -->
+      <!-- PAGE 3 - GALLERY / PHOTOS WITH FIRST ITEM AS VIDEO -->
       <div class="page" id="page3">
         <h2><i class="fa-solid fa-images" style="color: #c4715a;"></i> Our Memories</h2>
         <div class="divider"></div>
         <p style="font-size: 0.8rem; color: #b88a6a; margin-bottom: 0.5rem;">Every moment with you is a treasure</p>
-        <div class="gallery-grid" id="galleryGrid">
-          <!-- Gallery items will be populated by JavaScript -->
-        </div>
+        <div class="gallery-grid" id="galleryGrid"></div>
         <p class="message" style="font-size: 0.85rem; margin-top: 0.5rem;">You are the most beautiful person I know — inside and out.</p>
       </div>
 
@@ -447,9 +518,10 @@
         <h2>Happy Birthday, My Love</h2>
         <div class="divider"></div>
         <p class="message">I hope today brings you as much joy as you've brought into my life. You deserve all the happiness in the world.</p>
+        
         <div class="video-container">
           <video controls>
-            <source src="your-video-2.mp4" type="video/mp4">
+            <source src="cupcut.mp4" type="video/mp4">
             Your browser does not support the video tag.
           </video>
         </div>
@@ -537,12 +609,16 @@
   drawPortrait('portraitCanvas');
   drawPortrait('portraitCanvas2');
   
-  // Gallery images - Add your image URLs here
-  const galleryImages = [
-    { src: 'photo1.jpg', alt: 'Roselyn 1' },
-    { src: 'photo2.jpg', alt: 'Roselyn 2' },
-    { src: 'photo3.jpg', alt: 'Roselyn 3' },
-    { src: 'photo4.jpg', alt: 'Roselyn 4' }
+  // ============================================
+  // 📸 GALLERY: First item is a VIDEO, rest are PHOTOS
+  // ============================================
+  const galleryItems = [
+    // FIRST ITEM: VIDEO (autoplays muted in loop)
+    { type: 'video', src: 'normal vid.mp4', alt: 'Roselyn video' },
+    // REST: PHOTOS
+    { type: 'image', src: 'church.jpeg', alt: 'Roselyn 1' },
+    { type: 'image', src: 'photoshoot.jpeg', alt: 'Roselyn 2' },
+    { type: 'image', src: 'curvy.jpeg', alt: 'Roselyn 3' }
   ];
   
   // Populate gallery
@@ -551,10 +627,26 @@
     if (!galleryGrid) return;
     
     galleryGrid.innerHTML = '';
-    galleryImages.forEach(img => {
+    galleryItems.forEach((item, index) => {
       const div = document.createElement('div');
       div.className = 'gallery-item';
-      div.innerHTML = `<img src="${img.src}" alt="${img.alt}">`;
+      
+      if (item.type === 'video') {
+        // Video element with autoplay, loop, muted
+        div.innerHTML = `
+          <video class="gallery-video" autoplay loop muted playsinline>
+            <source src="${item.src}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          <div class="gallery-play-overlay">
+            <i class="fa-solid fa-play"></i>
+          </div>
+        `;
+      } else {
+        // Image element
+        div.innerHTML = `<img src="${item.src}" alt="${item.alt}" loading="lazy">`;
+      }
+      
       galleryGrid.appendChild(div);
     });
   }
@@ -695,8 +787,7 @@
   updateControls();
   
   console.log('💕 Happy Birthday Roselyn! From Collins 💕');
-  console.log('📸 To add photos: Edit the galleryImages array with your image URLs');
-  console.log('🎬 To add videos: Replace the video src with your video file names');
+  console.log('📸 Gallery: First item is a VIDEO, rest are PHOTOS');
 </script>
 </body>
 </html>
