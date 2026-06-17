@@ -15,7 +15,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 1.5rem;
+    padding: 1.2rem;
     font-family: 'Georgia', 'Times New Roman', serif;
     position: relative;
     overflow-x: hidden;
@@ -81,7 +81,7 @@
   .pages-container {
     position: relative;
     perspective: 1500px;
-    min-height: 500px;
+    min-height: 520px;
     background: #fffef9;
   }
   
@@ -92,7 +92,7 @@
     left: 0;
     display: none;
     padding: 1.2rem 1.2rem;
-    min-height: 500px;
+    min-height: 520px;
     flex-direction: column;
     align-items: center;
     text-align: center;
@@ -219,14 +219,13 @@
   .gallery-item img, .gallery-item video {
     width: 100%;
     height: 100%;
-    object-fit: contain;  /* ← FIXED: Shows full video without cropping */
+    object-fit: contain;
   }
   
-  /* Gallery video - hide controls */
   .gallery-video {
     width: 100%;
     height: 100%;
-    object-fit: contain;  /* ← FIXED: Shows full video without cropping */
+    object-fit: contain;
   }
   
   .gallery-video::-webkit-media-controls {
@@ -269,7 +268,6 @@
     display: none !important;
   }
   
-  /* Video play overlay for gallery */
   .gallery-play-overlay {
     position: absolute;
     top: 50%;
@@ -306,20 +304,23 @@
     color: #d4a08a;
   }
   
+  /* ============================================================
+     VIDEO CONTAINER - ONLY FOR PAGES 2 AND 6 (Half page size)
+     ============================================================ */
   .video-container {
     width: 100%;
-    max-height: 130px;
+    max-height: 260px;
     border-radius: 16px;
     overflow: hidden;
-    margin: 0.4rem 0;
+    margin: 0.3rem 0;
     background: #f8e8e0;
     border: 2px solid #f0d5c8;
   }
   
   .video-container video {
     width: 100%;
-    max-height: 130px;        
-    object-fit: contain;      /* ← FIXED: Shows full video without cropping */
+    max-height: 260px;
+    object-fit: contain;
     display: block;
   }
   
@@ -423,6 +424,8 @@
     h2 { font-size: 1.3rem; }
     .portrait { width: 110px; height: 110px; }
     .gallery-grid { gap: 6px; }
+    .video-container { max-height: 200px; }
+    .video-container video { max-height: 200px; }
   }
 </style>
 </head>
@@ -450,7 +453,7 @@
         <div class="signature">With all my love,<br>Collins</div>
       </div>
 
-      <!-- PAGE 2 - LOVE MESSAGE -->
+      <!-- PAGE 2 - LOVE MESSAGE (Video is now half page) -->
       <div class="page" id="page2">
         <i class="fa-solid fa-heart" style="font-size: 2.8rem; color: #e8677a; margin-bottom: 0.5rem;"></i>
         <h2>My Dearest Roselyn</h2>
@@ -458,6 +461,7 @@
         <p class="message">From the moment you came into my life, everything changed. Your smile lights up my darkest days, and your laugh is the most beautiful sound I've ever heard.</p>
         <p class="message">You are the woman I dream about, the one I want to wake up next to, and the one I thank God for every single day.</p>
         
+        <!-- VIDEO - Now occupies about half the page -->
         <div class="video-container">
           <video controls>
             <source src="couple goes.mp4" type="video/mp4">
@@ -466,7 +470,7 @@
         </div>
       </div>
 
-      <!-- PAGE 3 - GALLERY / PHOTOS WITH FIRST ITEM AS VIDEO -->
+      <!-- PAGE 3 - GALLERY -->
       <div class="page" id="page3">
         <h2><i class="fa-solid fa-images" style="color: #c4715a;"></i> Our Memories</h2>
         <div class="divider"></div>
@@ -475,7 +479,7 @@
         <p class="message" style="font-size: 0.85rem; margin-top: 0.5rem;">You are the most beautiful person I know — inside and out.</p>
       </div>
 
-      <!-- PAGE 4 - REASONS I LOVE YOU -->
+      <!-- PAGE 4 - REASONS -->
       <div class="page" id="page4">
         <h2>Why I Love You</h2>
         <div class="divider"></div>
@@ -503,7 +507,7 @@
         </ul>
       </div>
 
-      <!-- PAGE 5 - MY PROMISE -->
+      <!-- PAGE 5 - PROMISE -->
       <div class="page" id="page5">
         <i class="fa-solid fa-hand-holding-heart" style="font-size: 2.8rem; color: #e8677a; margin-bottom: 0.5rem;"></i>
         <h2>My Promise to You</h2>
@@ -515,13 +519,14 @@
         <div class="signature">Always and forever,<br>Collins</div>
       </div>
 
-      <!-- PAGE 6 - CLOSING + VIDEO -->
+      <!-- PAGE 6 - CLOSING (Video is now half page) -->
       <div class="page" id="page6">
         <div class="portrait"><canvas id="portraitCanvas2" width="260" height="260"></canvas></div>
         <h2>Happy Birthday, My Love</h2>
         <div class="divider"></div>
         <p class="message">I hope today brings you as much joy as you've brought into my life. You deserve all the happiness in the world.</p>
         
+        <!-- VIDEO - Now occupies about half the page -->
         <div class="video-container">
           <video controls>
             <source src="cupcut.mp4" type="video/mp4">
@@ -616,9 +621,7 @@
   // 📸 GALLERY: First item is a VIDEO, rest are PHOTOS
   // ============================================
   const galleryItems = [
-    // FIRST ITEM: VIDEO (autoplays muted in loop)
     { type: 'video', src: 'normal vid.mp4', alt: 'Roselyn video' },
-    // REST: PHOTOS
     { type: 'image', src: 'church.jpeg', alt: 'Roselyn 1' },
     { type: 'image', src: 'photoshoot.jpeg', alt: 'Roselyn 2' },
     { type: 'image', src: 'curvy.jpeg', alt: 'Roselyn 3' }
@@ -630,12 +633,11 @@
     if (!galleryGrid) return;
     
     galleryGrid.innerHTML = '';
-    galleryItems.forEach((item, index) => {
+    galleryItems.forEach((item) => {
       const div = document.createElement('div');
       div.className = 'gallery-item';
       
       if (item.type === 'video') {
-        // Video element with autoplay, loop, muted
         div.innerHTML = `
           <video class="gallery-video" autoplay loop muted playsinline>
             <source src="${item.src}" type="video/mp4">
@@ -646,7 +648,6 @@
           </div>
         `;
       } else {
-        // Image element
         div.innerHTML = `<img src="${item.src}" alt="${item.alt}" loading="lazy">`;
       }
       
